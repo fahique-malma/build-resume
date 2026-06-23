@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BuildResume</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="logo">
+        <div class="logo-icon">B</div>
+        <span class="logo-text">BuildResume</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="clearAll()">
+          <svg
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+          </svg>
+          <span class="btn-text">Clear All</span>
+        </button>
+        <button class="btn btn-primary" onclick="downloadPDF()">
+          <svg
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"
+            />
+          </svg>
+          <span class="btn-text">Download PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="view-toggle">
+      <button class="vtab active" id="vtab-edit" onclick="setView('edit')">
+        Edit
+      </button>
+      <button class="vtab" id="vtab-preview" onclick="setView('preview')">
+        👁 Preview
+      </button>
+    </div>
+
+    <div class="app-body">
+      <nav class="sidebar">
+        <div class="sidebar-label">Menu</div>
+        <div class="nav-item active" onclick="switchTab('personal', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+          </svg>
+          <span class="nav-label">Personal Info</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('summary', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9 12h6M9 8h6M9 16h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"
+            />
+          </svg>
+          <span class="nav-label">Summary</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('experience', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <rect x="2" y="7" width="20" height="14" rx="2" />
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+          </svg>
+          <span class="nav-label">Experience</span>
+          <span class="nav-badge" id="exp-badge">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('education', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" />
+            <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" />
+          </svg>
+          <span class="nav-label">Education</span>
+          <span class="nav-badge" id="edu-badge">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('projects', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />
+          </svg>
+          <span class="nav-label">Projects</span>
+          <span class="nav-badge" id="proj-badge">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('skills', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          <span class="nav-label">Skills</span>
+          <span class="nav-badge" id="skills-badge">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('certificates', this)">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="8" r="6" />
+            <path d="M9 14l-2 7 5-3 5 3-2-7" />
+          </svg>
+          <span class="nav-label">Certificates</span>
+          <span class="nav-badge" id="cert-badge">0</span>
+        </div>
+      </nav>
+
+      <div class="editor" id="editor-panel">
+        <div class="tab-section active" id="tab-personal">
+          <div class="section-title">Personal Info</div>
+          <div class="section-subtitle">
+            Your contact information — shown at the top of your resume
+          </div>
+          <div class="field-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              id="p-name"
+              placeholder="e.g. Mohammed Fahiq"
+              oninput="
+                save();
+                renderResume();
+              "
+            />
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Email</label>
+              <input
+                type="email"
+                id="p-email"
+                placeholder="abc@example.com"
+                oninput="
+                  save();
+                  renderResume();
+                "
+              />
+            </div>
+            <div class="field-group">
+              <label>Phone</label>
+              <input
+                type="tel"
+                id="p-phone"
+                placeholder="9876543210"
+                oninput="
+                  save();
+                  renderResume();
+                "
+              />
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Location</label>
+            <input
+              type="text"
+              id="p-location"
+              placeholder="City, State / Country"
+              oninput="
+                save();
+                renderResume();
+              "
+            />
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Website (Optional)</label>
+              <input
+                type="url"
+                id="p-website"
+                placeholder="https://yoursite.com"
+                oninput="
+                  save();
+                  renderResume();
+                "
+              />
+            </div>
+            <div class="field-group">
+              <label>LinkedIn</label>
+              <input
+                type="url"
+                id="p-linkedin"
+                placeholder="linkedin.com/in/you"
+                oninput="
+                  save();
+                  renderResume();
+                "
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-section" id="tab-summary">
+          <div class="section-title">Summary</div>
+          <div class="section-subtitle">
+            An overview of your career — 2 to 4 sentences
+          </div>
+          <div class="field-group">
+            <label>Professional Summary</label>
+            <textarea
+              id="s-text"
+              rows="8"
+              placeholder="software engineer with 2+ years of experience in..."
+              oninput="
+                save();
+                renderResume();
+              "
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="tab-section" id="tab-experience">
+          <div class="section-title">Experience</div>
+          <div class="section-subtitle">
+            Add your work history — most recent first
+          </div>
+          <div id="exp-list"></div>
+          <button class="btn-add" onclick="addExp()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Experience
+          </button>
+        </div>
+
+        <div class="tab-section" id="tab-education">
+          <div class="section-title">Education</div>
+          <div class="section-subtitle">
+            Add your educational qualifications
+          </div>
+          <div id="edu-list"></div>
+          <button class="btn-add" onclick="addEdu()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Education
+          </button>
+        </div>
+
+        <div class="tab-section" id="tab-projects">
+          <div class="section-title">Projects</div>
+          <div class="section-subtitle">
+            Showcase professional, academic or personal projects
+          </div>
+          <div id="proj-list"></div>
+          <button class="btn-add" onclick="addProj()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Project
+          </button>
+        </div>
+
+        <div class="tab-section" id="tab-skills">
+          <div class="section-title">Skills</div>
+          <div class="section-subtitle">
+            Add a category (e.g. Languages, Frameworks, Databases, Tools) then type individual skills (e.g.
+            Java, Python) and press Enter or ( + ). You can also paste
+            comma-separated values.
+          </div>
+          <div id="sg-list"></div>
+          <button class="btn-add" onclick="addSG()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Skill Category
+          </button>
+        </div>
+
+        <div class="tab-section" id="tab-certificates">
+          <div class="section-title">Certificates</div>
+          <div class="section-subtitle">
+            Add certifications, licenses or completed courses
+          </div>
+          <div id="cert-list"></div>
+          <button class="btn-add" onclick="addCert()">
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add Certificate
+          </button>
+        </div>
+      </div>
+
+      <div class="preview" id="preview-panel">
+        <div class="preview-inner">
+          <div class="preview-label">Live Preview</div>
+          <div id="resume-doc">
+            <div class="r-header">
+              <div class="r-name" id="r-name">Your Name</div>
+              <div class="r-contacts" id="r-contacts"></div>
+            </div>
+
+            <div class="r-section" id="r-sum-sec" style="display: none">
+              <div class="r-section-title">Profile</div>
+              <div class="r-summary" id="r-sum"></div>
+            </div>
+
+            <div class="r-section" id="r-exp-sec" style="display: none">
+              <div class="r-section-title">Experience</div>
+              <div id="r-exp-list"></div>
+            </div>
+
+            <div class="r-section" id="r-edu-sec" style="display: none">
+              <div class="r-section-title">Education</div>
+              <div id="r-edu-list"></div>
+            </div>
+
+            <div class="r-section" id="r-proj-sec" style="display: none">
+              <div class="r-section-title">Projects</div>
+              <div id="r-proj-list"></div>
+            </div>
+
+            <div class="r-section" id="r-sk-sec" style="display: none">
+              <div class="r-section-title">Skills</div>
+              <div class="r-skills-list" id="r-sk-list"></div>
+            </div>
+
+            <div class="r-section" id="r-cert-sec" style="display: none">
+              <div class="r-section-title">Certificates</div>
+              <div id="r-cert-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button
+        class="bnav-btn active"
+        id="bn-personal"
+        onclick="mobileTab('personal', this)"
+      >
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
+        Info
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-summary"
+        onclick="mobileTab('summary', this)"
+      >
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M9 12h6M9 8h6M9 16h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"
+          />
+        </svg>
+        Summary
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-experience"
+        onclick="mobileTab('experience', this)"
+      >
+        <span class="bnav-badge" id="bn-badge-exp">0</span>
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+        </svg>
+        Work
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-education"
+        onclick="mobileTab('education', this)"
+      >
+        <span class="bnav-badge" id="bn-badge-edu">0</span>
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z" />
+          <path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" />
+        </svg>
+        Edu
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-projects"
+        onclick="mobileTab('projects', this)"
+      >
+        <span class="bnav-badge" id="bn-badge-proj">0</span>
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" />
+        </svg>
+        Projects
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-skills"
+        onclick="mobileTab('skills', this)"
+      >
+        <span class="bnav-badge" id="bn-badge-sk">0</span>
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+        Skills
+      </button>
+      <button
+        class="bnav-btn"
+        id="bn-certificates"
+        onclick="mobileTab('certificates', this)"
+      >
+        <span class="bnav-badge" id="bn-badge-cert">0</span>
+        <svg
+          width="19"
+          height="19"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="8" r="6" />
+          <path d="M9 14l-2 7 5-3 5 3-2-7" />
+        </svg>
+        Certs
+      </button>
+    </nav>
+
+    <script src="script.js"></script>
+  </body>
+</html>
