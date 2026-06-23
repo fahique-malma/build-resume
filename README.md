@@ -4,6 +4,12 @@ A Resume Builder web application that enables users to create, edit, preview, an
 
 ---
 
+## 🚀 Live Demo
+
+🔗 https://fahique-malma.github.io/build-resume/
+
+---
+
 ## ✨ Features
 
 ### 👤 Personal Information
